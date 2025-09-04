@@ -298,6 +298,80 @@ async function checkAdditionalFiles(domain: string): Promise<{ robots: CheckResu
   // Store robots.txt content for sitemap extraction
   let robotsText = '';
   let sitemapUrls: string[] = [];
+
+  // Enhanced llms.txt discovery with Shopify and other platform support
+  const detectPlatformType = (url: string, html?: string): 'shopify' | 'wordpress' | 'generic' => {
+    const urlLower = url.toLowerCase();
+    const htmlLower = html?.toLowerCase() || '';
+    
+    // Shopify detection patterns
+    if (urlLower.includes('shopify.com') || 
+        urlLower.includes('.myshopify.com') ||
+        htmlLower.includes('shopify') ||
+        htmlLower.includes('shop-js') ||
+        htmlLower.includes('/shop/js/') ||
+        htmlLower.includes('shopify-features') ||
+        htmlLower.includes('shopify-analytics-lib')) {
+      return 'shopify';
+    }
+    
+    // WordPress detection patterns  
+    if (htmlLower.includes('wp-content') ||
+        htmlLower.includes('wordpress') ||
+        htmlLower.includes('/wp-includes/') ||
+        htmlLower.includes('wp-json')) {
+      return 'wordpress';
+    }
+    
+    return 'generic';
+  };
+
+  const getLlmsPaths = (platformType: 'shopify' | 'wordpress' | 'generic'): string[] => {
+    const basePaths = [
+      'llms.txt',
+      'LLMs.txt', 
+      'llms-full.txt',
+      '.well-known/llms.txt',
+      'public/llms.txt'
+    ];
+
+    switch (platformType) {
+      case 'shopify':
+        return [
+          ...basePaths,
+          'files/llms.txt',
+          'assets/llms.txt', 
+          'pages/llms.txt',
+          'apps/llms.txt',
+          'cdn/shop/files/llms.txt',
+          'cdn/files/llms.txt',
+          's/files/llms.txt',
+          'collections/llms.txt',
+          'blogs/llms.txt'
+        ];
+      
+      case 'wordpress':
+        return [
+          ...basePaths,
+          'wp-content/uploads/llms.txt',
+          'wp-content/llms.txt',
+          'uploads/llms.txt',
+          'media/llms.txt',
+          'content/llms.txt'
+        ];
+        
+      default:
+        return [
+          ...basePaths,
+          'static/llms.txt',
+          'docs/llms.txt',
+          'documentation/llms.txt',
+          'api/llms.txt',
+          '_next/static/llms.txt',
+          'dist/llms.txt'
+        ];
+    }
+  };
   
   // Create all fetch promises in parallel
   const promises = [
@@ -331,37 +405,103 @@ async function checkAdditionalFiles(domain: string): Promise<{ robots: CheckResu
       })
       .catch(() => {}), // Ignore errors, use default
     
-    // Check llms.txt variations in parallel
-    ...['llms.txt', 'LLMs.txt', 'llms-full.txt'].map(filename =>
-      fetchWithTimeout(`${cleanUrl}/${filename}`)
-        .then(async (response) => {
-          if (response.ok) {
-            const llmsText = await response.text();
-            // Verify it's actually an LLMs.txt file, not a 404 page or HTML
-            const isValidLlms = (
-              llmsText.length > 10 && // Has some content
-              !llmsText.includes('<!DOCTYPE') && 
-              !llmsText.includes('<html') &&
-              !llmsText.includes('<HTML') &&
-              !llmsText.toLowerCase().includes('404 not found') &&
-              !llmsText.toLowerCase().includes('page not found') &&
-              !llmsText.toLowerCase().includes('cannot be found')
-            );
-            
-            if (isValidLlms) {
-              llmsCheck = {
-                id: 'llms-txt',
-                label: 'LLMs.txt',
-                status: 'pass',
-                score: 100,
-                details: `${filename} file found with AI usage guidelines`,
-                recommendation: 'Great! You have defined AI usage permissions'
-              };
+    // Enhanced llms.txt discovery with platform detection
+    (async () => {
+      try {
+        // First, try to get basic HTML to detect platform type  
+        const htmlResponse = await fetchWithTimeout(cleanUrl);
+        const html = htmlResponse.ok ? await htmlResponse.text() : '';
+        const platformType = detectPlatformType(cleanUrl, html);
+        const llmsPaths = getLlmsPaths(platformType);
+        
+        // Try all possible paths for this platform type
+        const llmsPromises = llmsPaths.map(async (path) => {
+          try {
+            const testUrl = `${cleanUrl}/${path}`;
+            const response = await fetchWithTimeout(testUrl);
+            if (response.ok) {
+              const llmsText = await response.text();
+              
+              // Enhanced validation for LLMs.txt files
+              const isValidLlms = (
+                llmsText.length > 10 && // Has some content
+                !llmsText.includes('<!DOCTYPE') && 
+                !llmsText.includes('<html') &&
+                !llmsText.includes('<HTML') &&
+                !llmsText.toLowerCase().includes('404 not found') &&
+                !llmsText.toLowerCase().includes('page not found') &&
+                !llmsText.toLowerCase().includes('cannot be found') &&
+                !llmsText.toLowerCase().includes('<title>404') &&
+                !llmsText.includes('<body') && // Not an HTML page
+                // Additional content validation - should look like actual LLMs.txt
+                (llmsText.includes('http') || 
+                 llmsText.includes('AI') || 
+                 llmsText.includes('LLM') ||
+                 llmsText.includes('model') ||
+                 llmsText.includes('crawl') ||
+                 llmsText.includes('#') || // Markdown-style comments
+                 llmsText.includes('//') || // Comments
+                 llmsText.match(/^[^\s<>]+:/m)) // Looks like structured data
+              );
+              
+              if (isValidLlms) {
+                return {
+                  found: true,
+                  path,
+                  content: llmsText,
+                  platformType
+                };
+              }
             }
+          } catch (error) {
+            // Continue to next path
           }
-        })
-        .catch(() => {}) // Ignore errors
-    )
+          return { found: false, path };
+        });
+        
+        const results = await Promise.all(llmsPromises);
+        const foundResult = results.find(r => r.found);
+        
+        if (foundResult) {
+          // Calculate score based on content quality and location
+          let score = 100;
+          const isStandardLocation = ['llms.txt', 'LLMs.txt', 'llms-full.txt'].includes(foundResult.path);
+          const isWellKnownLocation = foundResult.path === '.well-known/llms.txt';
+          
+          if (!isStandardLocation && !isWellKnownLocation) {
+            score = 90; // Slightly lower score for non-standard locations
+          }
+          
+          llmsCheck = {
+            id: 'llms-txt',
+            label: 'LLMs.txt',
+            status: 'pass',
+            score,
+            details: `Found at /${foundResult.path}${foundResult.platformType === 'shopify' ? ' (Shopify-compatible)' : foundResult.platformType === 'wordpress' ? ' (WordPress-compatible)' : ''}`,
+            recommendation: isStandardLocation ? 'Perfect! Standard LLMs.txt implementation' : 'Good! Consider also placing at /llms.txt for maximum compatibility'
+          };
+        } else {
+          // Enhanced recommendation based on platform type
+          const platformSpecificRec = platformType === 'shopify' 
+            ? 'For Shopify stores, consider placing llms.txt at /files/llms.txt or /pages/llms.txt'
+            : platformType === 'wordpress'
+            ? 'For WordPress sites, consider placing llms.txt at /wp-content/uploads/llms.txt or root level'
+            : 'Add an llms.txt file to define AI usage permissions';
+            
+          llmsCheck = {
+            id: 'llms-txt',
+            label: 'LLMs.txt',
+            status: 'fail',
+            score: 0,
+            details: `No llms.txt found (checked ${llmsPaths.length} ${platformType}-specific locations)`,
+            recommendation: platformSpecificRec
+          };
+        }
+      } catch (error) {
+        console.error('Enhanced LLMs.txt check failed:', error);
+        // Keep default llmsCheck
+      }
+    })()
   ];
   
   // Wait for all promises to complete (with timeout)
@@ -567,6 +707,56 @@ export async function POST(request: NextRequest) {
       baseScore += 15;
     } else if (contentSignals >= 2) {
       baseScore += 10;
+    }
+    
+    // Enhanced support for sites without llms.txt (especially Shopify/e-commerce)
+    const llmsCheck = allChecks.find(c => c.id === 'llms-txt');
+    const hasGoodStructure = allChecks.filter(c => 
+      ['readability', 'heading-structure', 'meta-tags', 'semantic-html'].includes(c.id) && c.score >= 70
+    ).length >= 3;
+    
+    // Detect if it's an e-commerce/business site that might not need llms.txt
+    const isEcommerce = html.toLowerCase().includes('add to cart') || 
+                       html.toLowerCase().includes('shop now') ||
+                       html.toLowerCase().includes('price') ||
+                       html.toLowerCase().includes('product') ||
+                       html.toLowerCase().includes('checkout') ||
+                       domain.includes('shop') ||
+                       domain.includes('store');
+    
+    const isShopify = domain.includes('shopify.com') || 
+                     domain.includes('.myshopify.com') ||
+                     html.toLowerCase().includes('shopify') ||
+                     html.toLowerCase().includes('shop-js');
+    
+    // For sites without llms.txt but with good structure, don't penalize as heavily
+    if (llmsCheck && llmsCheck.score === 0 && hasGoodStructure) {
+      if (isEcommerce || isShopify) {
+        // E-commerce sites get bonus points for good structure even without llms.txt
+        baseScore += 8;
+        console.log(`[AI-READY] Applied e-commerce bonus (+8) for site without llms.txt but good structure`);
+      } else {
+        // Regular sites get smaller bonus
+        baseScore += 5;
+        console.log(`[AI-READY] Applied structure bonus (+5) for site without llms.txt but good structure`);
+      }
+    }
+    
+    // Shopify-specific bonuses for AI readiness indicators
+    if (isShopify) {
+      const hasProductData = html.toLowerCase().includes('product') && 
+                            (html.includes('application/ld+json') || html.includes('schema.org'));
+      const hasMetaPixel = html.includes('fbq(') || html.includes('facebook');
+      const hasGoogleAnalytics = html.includes('gtag(') || html.includes('analytics');
+      
+      let shopifyBonus = 0;
+      if (hasProductData) shopifyBonus += 5; // Structured product data
+      if (hasMetaPixel || hasGoogleAnalytics) shopifyBonus += 3; // Analytics setup
+      
+      if (shopifyBonus > 0) {
+        baseScore += shopifyBonus;
+        console.log(`[AI-READY] Applied Shopify-specific bonus (+${shopifyBonus}) for structured data and analytics`);
+      }
     }
     
     // Ensure minimum viable score
