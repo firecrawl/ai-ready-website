@@ -15,6 +15,7 @@ npm install
 ```bash
 # Copy from .env.local.example or add your API keys
 OPENAI_API_KEY=your_openai_api_key
+GROQ_API_KEY=your_groq_api_key
 FIRECRAWL_API_KEY=your_firecrawl_api_key
 ```
 
