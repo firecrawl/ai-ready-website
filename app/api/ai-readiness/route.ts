@@ -580,7 +580,7 @@ export async function POST(request: NextRequest) {
     console.log(`[AI-READY] Final scoring for ${domain}: base=${baseScore}, bonus=${reputationBonus}, final=${overallScore}`);
     console.log(`[AI-READY] Total analysis time: ${Date.now() - scrapeStartTime}ms`);
     
-    return NextResponse.json({
+    const responseData = {
       success: true,
       url,
       overallScore,
@@ -591,7 +591,23 @@ export async function POST(request: NextRequest) {
         description: metadata.description,
         analyzedAt: new Date().toISOString()
       }
+    };
+
+    // Save to history in the background (don't wait for it)
+    fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/history`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url,
+        score: overallScore,
+        checks: allChecks,
+        metadata: responseData.metadata
+      })
+    }).catch(error => {
+      console.warn('Failed to save analysis to history:', error);
     });
+    
+    return NextResponse.json(responseData);
     
   } catch (error) {
     console.error('AI Readiness analysis error:', error);

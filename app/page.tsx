@@ -23,6 +23,7 @@ import HeroScraping from "@/components/app/(home)/sections/hero-scraping/HeroScr
 import { Endpoint } from "@/components/shared/Playground/Context/types";
 import InlineResults from "@/components/app/(home)/sections/ai-readiness/InlineResults";
 import ControlPanel from "@/components/app/(home)/sections/ai-readiness/ControlPanel";
+import EnhancedControlPanel from "@/components/app/(home)/sections/ai-readiness/EnhancedControlPanel";
 
 // Import header components
 import HeaderBrandKit from "@/components/shared/header/BrandKit/BrandKit";
@@ -40,6 +41,7 @@ export default function StyleGuidePage() {
   const [analysisData, setAnalysisData] = useState<any>(null);
   const [hasOpenAIKey, setHasOpenAIKey] = useState(false);
   const [urlError, setUrlError] = useState<string>("");
+  const [analysisMode, setAnalysisMode] = useState<'single' | 'bulk'>('single');
   
   // Check for API keys on mount
   useEffect(() => {
@@ -79,35 +81,81 @@ export default function StyleGuidePage() {
     setAnalysisData(null);
     
     try {
-      // Start basic analysis
-      const basicAnalysisPromise = fetch('/api/ai-readiness', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url: processedUrl }),
-      });
-      
-      // Disable automatic AI analysis for now - user will click button
-      let aiAnalysisPromise = null;
-      
-      // Wait for basic analysis
-      const response = await basicAnalysisPromise;
-      const data = await response.json();
-      
-      if (data.success) {
-        setAnalysisData({
-          ...data,
-          aiAnalysisPromise: null, // No auto AI analysis
-          hasOpenAIKey: false, // Disable auto AI
-          autoStartAI: false // Don't auto-start
+      if (analysisMode === 'bulk') {
+        // Bulk analysis
+        const bulkResponse = await fetch('/api/bulk-analysis', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            url: processedUrl,
+            maxPages: 10,
+            includeSubdomains: false,
+            priority: 'speed'
+          }),
         });
-        setIsAnalyzing(false);
-        setShowResults(true);
+        
+        const bulkData = await bulkResponse.json();
+        
+        if (bulkData.success) {
+          // Transform bulk data to match expected analysisData structure
+          setAnalysisData({
+            success: true,
+            url: processedUrl,
+            overallScore: bulkData.averageScore,
+            checks: [
+              {
+                id: 'bulk-summary',
+                label: 'Site-wide Analysis',
+                status: bulkData.averageScore >= 70 ? 'pass' : bulkData.averageScore >= 50 ? 'warning' : 'fail',
+                score: bulkData.averageScore,
+                details: `Analyzed ${bulkData.totalPages} pages with ${bulkData.topIssues.length} common issues identified`,
+                recommendation: `Focus on fixing the most common issues across your site for maximum impact`
+              }
+            ],
+            bulkAnalysis: bulkData,
+            metadata: {
+              title: `Bulk Analysis of ${processedUrl}`,
+              description: `Site-wide AI readiness analysis of ${bulkData.totalPages} pages`,
+              analyzedAt: new Date().toISOString()
+            }
+          });
+          setIsAnalyzing(false);
+          setShowResults(true);
+        } else {
+          console.error('Bulk analysis failed:', bulkData.error);
+          setIsAnalyzing(false);
+          alert('Failed to analyze website. Please check the URL and try again.');
+        }
       } else {
-        console.error('Analysis failed:', data.error);
-        setIsAnalyzing(false);
-        alert('Failed to analyze website. Please check the URL and try again.');
+        // Single page analysis (existing logic)
+        const basicAnalysisPromise = fetch('/api/ai-readiness', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ url: processedUrl }),
+        });
+        
+        // Wait for basic analysis
+        const response = await basicAnalysisPromise;
+        const data = await response.json();
+        
+        if (data.success) {
+          setAnalysisData({
+            ...data,
+            aiAnalysisPromise: null,
+            hasOpenAIKey: false,
+            autoStartAI: false
+          });
+          setIsAnalyzing(false);
+          setShowResults(true);
+        } else {
+          console.error('Analysis failed:', data.error);
+          setIsAnalyzing(false);
+          alert('Failed to analyze website. Please check the URL and try again.');
+        }
       }
     } catch (error) {
       console.error('Analysis error:', error);
@@ -197,7 +245,7 @@ export default function StyleGuidePage() {
                   className="relative container px-16"
                   style={{ marginTop: '-35px' }}
                 >
-                  <ControlPanel
+                  <EnhancedControlPanel
                     isAnalyzing={isAnalyzing}
                     showResults={showResults}
                     url={url}
@@ -233,6 +281,32 @@ export default function StyleGuidePage() {
               
               {/* Hero Input Component */}
               <div className="max-w-552 mx-auto w-full relative z-[11] lg:z-[2] rounded-20 -mt-30 lg:-mt-30">
+                {/* Analysis Mode Selector */}
+                <div className="flex justify-center mb-4">
+                  <div className="bg-white bg-opacity-80 backdrop-blur-sm rounded-full p-1 border border-gray-200">
+                    <button
+                      onClick={() => setAnalysisMode('single')}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                        analysisMode === 'single'
+                          ? 'bg-white text-gray-900 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      Single Page
+                    </button>
+                    <button
+                      onClick={() => setAnalysisMode('bulk')}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                        analysisMode === 'bulk'
+                          ? 'bg-white text-gray-900 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      Full Site (NEW)
+                    </button>
+                  </div>
+                </div>
+
                 <div
                   className="overlay bg-accent-white"
                   style={{
@@ -246,7 +320,7 @@ export default function StyleGuidePage() {
                   
                   <input
                     className={`flex-1 bg-transparent text-body-input text-accent-black placeholder:text-black-alpha-48 focus:outline-none focus:ring-0 focus:border-transparent ${urlError ? 'text-heat-200' : ''}`}
-                    placeholder="example.com"
+                    placeholder={analysisMode === 'single' ? "example.com" : "example.com (analyze entire site)"}
                     type="text"
                     value={url}
                     onChange={(e) => {
@@ -273,6 +347,16 @@ export default function StyleGuidePage() {
                   >
                     <HeroInputSubmitButton dirty={url.length > 0} tab={tab} />
                   </div>
+                </div>
+                
+                {/* Mode description */}
+                <div className="text-center mt-3">
+                  <p className="text-xs text-gray-600">
+                    {analysisMode === 'single' 
+                      ? 'Analyze a single webpage for AI readiness'
+                      : 'Crawl and analyze up to 10 pages from this website'
+                    }
+                  </p>
                 </div>
                 
                 {/* Error message */}
