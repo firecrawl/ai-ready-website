@@ -5,7 +5,6 @@ import ArrowRight from "@/components/app/(home)/sections/hero-input/_svg/ArrowRi
 import Button from "@/components/shared/button/Button";
 
 export default function HeroInputSubmitButton({
-  tab,
   dirty,
 }: {
   tab: string;

@@ -1,5 +1,3 @@
-import { animate } from "motion";
-
 import { Ticker } from "@/components/shared/pixi/Pixi";
 import { sleep } from "@/utils/sleep";
 

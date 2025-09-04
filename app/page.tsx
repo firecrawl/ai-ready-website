@@ -3,9 +3,6 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
-// Import shared components
-import Button from "@/components/shared/button/Button";
 import { Connector } from "@/components/shared/layout/curvy-rect";
 import HeroFlame from "@/components/shared/effects/flame/hero-flame";
 import AsciiExplosion from "@/components/shared/effects/flame/ascii-explosion";
@@ -21,8 +18,6 @@ import HeroInputSubmitButton from "@/components/app/(home)/sections/hero-input/B
 import Globe from "@/components/app/(home)/sections/hero-input/_svg/Globe";
 import HeroScraping from "@/components/app/(home)/sections/hero-scraping/HeroScraping";
 import { Endpoint } from "@/components/shared/Playground/Context/types";
-import InlineResults from "@/components/app/(home)/sections/ai-readiness/InlineResults";
-import ControlPanel from "@/components/app/(home)/sections/ai-readiness/ControlPanel";
 import EnhancedControlPanel from "@/components/app/(home)/sections/ai-readiness/EnhancedControlPanel";
 
 // Import header components
@@ -33,13 +28,11 @@ import GithubIcon from "@/components/shared/header/Github/_svg/GithubIcon";
 import ButtonUI from "@/components/ui/shadcn/button";
 
 export default function StyleGuidePage() {
-  const [tab, setTab] = useState<Endpoint>(Endpoint.Scrape);
+  const [tab] = useState<Endpoint>(Endpoint.Scrape);
   const [url, setUrl] = useState<string>("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  const [analysisStep, setAnalysisStep] = useState(0);
-  const [analysisData, setAnalysisData] = useState<any>(null);
-  const [hasOpenAIKey, setHasOpenAIKey] = useState(false);
+  const [analysisData, setAnalysisData] = useState<unknown>(null);
   const [urlError, setUrlError] = useState<string>("");
   const [analysisMode, setAnalysisMode] = useState<'single' | 'bulk'>('single');
   
@@ -48,9 +41,10 @@ export default function StyleGuidePage() {
     fetch('/api/check-config')
       .then(res => res.json())
       .then(data => {
-        setHasOpenAIKey(data.hasOpenAIKey || false);
+        // Keep result for potential future use
+        console.log('Config check:', data);
       })
-      .catch(() => setHasOpenAIKey(false));
+      .catch(() => console.log('Config check failed'));
   }, []);
   
   const handleAnalysis = async () => {
@@ -70,7 +64,7 @@ export default function StyleGuidePage() {
         setUrlError('Please enter a valid URL (e.g., example.com)');
         return;
       }
-    } catch (error) {
+    } catch {
       // If URL constructor throws, it's not a valid URL
       setUrlError('Please enter a valid URL (e.g., example.com)');
       return;
@@ -253,7 +247,6 @@ export default function StyleGuidePage() {
                     onReset={() => {
                       setIsAnalyzing(false);
                       setShowResults(false);
-                      setAnalysisStep(0);
                       setAnalysisData(null);
                       setUrl("");
                     }}

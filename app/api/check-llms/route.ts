@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import FirecrawlApp from '@mendable/firecrawl-js';
 
-const firecrawl = new FirecrawlApp({
+const firecrawl = process.env.FIRECRAWL_API_KEY ? new FirecrawlApp({
   apiKey: process.env.FIRECRAWL_API_KEY!
-});
+}) : null;
 
 // Enhanced platform detection
 function detectPlatformType(url: string, html?: string): 'shopify' | 'wordpress' | 'generic' {
@@ -181,22 +181,24 @@ export async function POST(request: NextRequest) {
     }
     
     // Also try with Firecrawl to see what it finds (for comparison)
-    try {
-      const scrapeResult = await firecrawl.scrape(`${baseUrl}/llms.txt`, {
-        formats: ['markdown'],
-      });
-      
-      results.firecrawlResult = {
-        success: true,
+    if (firecrawl) {
+      try {
+        const scrapeResult = await firecrawl.scrape(`${baseUrl}/llms.txt`, {
+          formats: ['markdown'],
+        });
+        
+        results.firecrawlResult = {
+          success: true,
         hasContent: !!scrapeResult?.markdown,
         contentLength: scrapeResult?.markdown?.length || 0,
         first100Chars: scrapeResult?.markdown?.substring(0, 100)
       };
-    } catch (e: any) {
-      results.firecrawlResult = {
-        success: false,
-        error: e.message
-      };
+      } catch (e: any) {
+        results.firecrawlResult = {
+          success: false,
+          error: e.message
+        };
+      }
     }
     
     return NextResponse.json(results);

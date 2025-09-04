@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import FirecrawlApp from '@mendable/firecrawl-js';
 
-const firecrawl = new FirecrawlApp({
+const firecrawl = process.env.FIRECRAWL_API_KEY ? new FirecrawlApp({
   apiKey: process.env.FIRECRAWL_API_KEY!
-});
+}) : null;
 
 interface CheckResult {
   id: string;
@@ -57,7 +57,7 @@ function extractTextContent(html: string): string {
   return cleanHtml.replace(/\s+/g, ' ').trim();
 }
 
-async function analyzeHTML(html: string, metadata: any, url: string): Promise<CheckResult[]> {
+async function analyzeHTML(html: string, metadata: unknown): Promise<CheckResult[]> {
   const results: CheckResult[] = [];
   
   console.log('[AI-READY] HTML Check 1/5: Extracting text content...');
@@ -70,7 +70,7 @@ async function analyzeHTML(html: string, metadata: any, url: string): Promise<Ch
   const headingLevels = headings.map(h => parseInt(h.match(/<h([1-6])/i)?.[1] || '0'));
   
   let headingScore = 100;
-  let headingIssues: string[] = [];
+  const headingIssues: string[] = [];
   
   // Check for single H1
   if (h1Count === 0) {
@@ -140,21 +140,20 @@ async function analyzeHTML(html: string, metadata: any, url: string): Promise<Ch
   
   console.log('[AI-READY] HTML Check 4/5: Checking metadata quality...');
   // 4. Enhanced Metadata Quality (Medium Signal)
-  const hasOgTitle = metadata?.ogTitle || metadata?.title || html.includes('og:title') || html.includes('<title');
-  const hasOgDescription = metadata?.ogDescription || metadata?.description || html.includes('og:description') || html.includes('name="description"');
+  const hasOgTitle = (metadata as any)?.ogTitle || (metadata as any)?.title || html.includes('og:title') || html.includes('<title');
+  const hasOgDescription = (metadata as any)?.ogDescription || (metadata as any)?.description || html.includes('og:description') || html.includes('name="description"');
   
   // Check description quality
   const descMatch = html.match(/content="([^"]*)"/i);
   const descLength = descMatch?.[1]?.length || 0;
   const hasGoodDescLength = descLength >= 70 && descLength <= 160;
   
-  const hasCanonical = html.includes('rel="canonical"');
   const hasAuthor = html.includes('name="author"') || html.includes('property="article:author"');
   const hasPublishDate = html.includes('property="article:published_time"') || html.includes('property="article:modified_time"');
   
   // Enhanced scoring - be more generous
   let metaScore = 30; // Base score for having a page
-  let metaDetails: string[] = [];
+  const metaDetails: string[] = [];
   
   if (hasOgTitle) {
     metaScore += 30;
@@ -453,7 +452,7 @@ async function checkAdditionalFiles(domain: string): Promise<{ robots: CheckResu
                 };
               }
             }
-          } catch (error) {
+          } catch {
             // Continue to next path
           }
           return { found: false, path };
@@ -554,7 +553,7 @@ async function checkAdditionalFiles(domain: string): Promise<{ robots: CheckResu
           break; // Found a valid sitemap, stop checking
         }
       }
-    } catch (error) {
+    } catch {
       // Continue checking other URLs
     }
   }
@@ -611,7 +610,7 @@ export async function POST(request: NextRequest) {
     // Validate URL format
     try {
       new URL(url);
-    } catch (e) {
+    } catch {
       return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 });
     }
     
@@ -620,6 +619,10 @@ export async function POST(request: NextRequest) {
     
     // Scrape the website using Firecrawl v2
     let scrapeResult;
+    if (!firecrawl) {
+      return NextResponse.json({ error: 'Firecrawl service not configured. Please set FIRECRAWL_API_KEY.' }, { status: 500 });
+    }
+    
     try {
       scrapeResult = await firecrawl.scrape(url, {
         formats: ['html'],
@@ -643,7 +646,7 @@ export async function POST(request: NextRequest) {
     const htmlStartTime = Date.now();
     
     // Analyze the HTML
-    const htmlChecks = await analyzeHTML(html, metadata, url);
+    const htmlChecks = await analyzeHTML(html, metadata);
     console.log(`[AI-READY] Step 2/4: HTML analysis completed in ${Date.now() - htmlStartTime}ms`);
     
     console.log('[AI-READY] Step 3/4: Checking robots.txt, sitemap.xml, llms.txt...');

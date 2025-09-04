@@ -1,4 +1,3 @@
-/* eslint-disable @stylistic/array-element-newline */
 "use client";
 
 import { animate } from "motion";

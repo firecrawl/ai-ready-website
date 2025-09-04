@@ -1,29 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai';
 
-// Lazy initialization of OpenAI client only when needed
-let openai: OpenAI | null = null;
-function getOpenAIClient() {
-  if (!openai && process.env.OPENAI_API_KEY) {
-    openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-  }
-  return openai;
-}
-
-interface AIAnalysisRequest {
-  url: string;
-  htmlContent: string;
-  currentChecks: any[];
-}
-
-async function generateAIInsights(url: string, htmlContent: string, currentChecks: any[]) {
+async function generateAIInsights(url: string, htmlContent: string, currentChecks: unknown[]) {
   // Try Groq first since OpenAI has quota issues
   return generateGroqInsights(url, htmlContent, currentChecks);
 }
 
-async function generateGroqInsights(url: string, htmlContent: string, currentChecks: any[]) {
+async function generateGroqInsights(url: string, htmlContent: string, currentChecks: unknown[]) {
   try {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -43,7 +25,7 @@ async function generateGroqInsights(url: string, htmlContent: string, currentChe
             content: `Analyze this webpage for AI readiness. This could be ANY type of site - adapt your analysis accordingly.
 
 URL: ${url}
-Page-Level Scores: ${JSON.stringify(currentChecks.filter(c => ['readability', 'heading-structure', 'meta-tags'].includes(c.id)).map(c => c.label + ': ' + c.score))}
+Page-Level Scores: ${JSON.stringify(currentChecks.filter((c: any) => ['readability', 'heading-structure', 'meta-tags'].includes(c.id)).map((c: any) => c.label + ': ' + c.score))}
 
 Analyze these universal AI readiness factors:
 1. Content Quality for AI (content-quality) - Is the content clear, factual, and valuable for AI training?
