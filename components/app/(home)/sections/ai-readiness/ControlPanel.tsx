@@ -25,6 +25,7 @@ import { useEffect, useState } from "react";
 import ScoreChart from "./ScoreChart";
 import RadarChart from "./RadarChart";
 import MetricBars from "./MetricBars";
+import DownloadReport from "./DownloadReport";
 
 interface ControlPanelProps {
   isAnalyzing: boolean;
@@ -670,6 +671,14 @@ export default function ControlPanel({
           />
         </motion.div>
       )}
+
+      {/* Download Report Component */}
+      <div className="px-40 mb-20">
+        <DownloadReport 
+          analysisData={analysisData} 
+          isVisible={showResults}
+        />
+      </div>
 
       {/* Action Buttons */}
       {showResults && (
