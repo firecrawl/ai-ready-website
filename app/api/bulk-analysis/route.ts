@@ -33,7 +33,7 @@ interface BulkAnalysisResult {
 }
 
 // Lightweight analysis function for bulk processing
-async function quickAnalyzeHTML(html: string, url: string, metadata: any): Promise<{ score: number; issues: string[]; recommendations: string[] }> {
+async function quickAnalyzeHTML(html: string): Promise<{ score: number; issues: string[]; recommendations: string[] }> {
   const issues: string[] = [];
   const recommendations: string[] = [];
   let score = 100;
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
     let baseUrl: URL;
     try {
       baseUrl = new URL(url.startsWith('http') ? url : `https://${url}`);
-    } catch (e) {
+    } catch {
       return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 });
     }
 
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
     // Use Firecrawl to crawl the site
     let crawlResult;
     try {
-      const crawlOptions: any = {
+      const crawlOptions: Record<string, unknown> = {
         limit: Math.min(maxPages, 50), // Cap at 50 for demo
         scrapeOptions: {
           formats: ['html'],
@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
         continue;
       }
 
-      const analysis = await quickAnalyzeHTML(html, pageUrl, metadata);
+      const analysis = await quickAnalyzeHTML(html);
       
       const pageAnalysis: PageAnalysis = {
         url: pageUrl,

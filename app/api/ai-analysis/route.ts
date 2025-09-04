@@ -1,29 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai';
 
-// Lazy initialization of OpenAI client only when needed
-let openai: OpenAI | null = null;
-function getOpenAIClient() {
-  if (!openai && process.env.OPENAI_API_KEY) {
-    openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-  }
-  return openai;
-}
-
-interface AIAnalysisRequest {
-  url: string;
-  htmlContent: string;
-  currentChecks: any[];
-}
-
-async function generateAIInsights(url: string, htmlContent: string, currentChecks: any[]) {
+async function generateAIInsights(url: string, htmlContent: string, currentChecks: unknown[]) {
   // Try Groq first since OpenAI has quota issues
   return generateGroqInsights(url, htmlContent, currentChecks);
 }
 
-async function generateGroqInsights(url: string, htmlContent: string, currentChecks: any[]) {
+async function generateGroqInsights(url: string, htmlContent: string, currentChecks: unknown[]) {
   try {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
