@@ -15,8 +15,8 @@ export async function GET(request: NextRequest) {
       const latestAnalysis = await db.getLatestAnalysis(url);
       targetIndustry = classifyIndustry(
         url, 
-        latestAnalysis?.metadata?.title, 
-        latestAnalysis?.metadata?.description
+        (latestAnalysis?.metadata as any)?.title, 
+        (latestAnalysis?.metadata as any)?.description
       );
     }
 
@@ -24,15 +24,15 @@ export async function GET(request: NextRequest) {
     const benchmark = targetIndustry ? await db.getBenchmark(targetIndustry) : null;
     
     // Get top performing sites overall and by industry
-    const topSites = await db.getTopPerformingSites(targetIndustry, 10);
+    const topSites = await db.getTopPerformingSites(targetIndustry || undefined, 10);
     const allTopSites = await db.getTopPerformingSites(undefined, 5);
 
     // Get user's current position if URL provided
-    let userRanking = null;
+    let userRanking: any = null;
     if (url) {
       const userAnalysis = await db.getLatestAnalysis(url);
       if (userAnalysis) {
-        const allSites = await db.getTopPerformingSites(targetIndustry, 1000);
+        const allSites = await db.getTopPerformingSites(targetIndustry || undefined, 1000);
         const userRank = allSites.findIndex(site => site.url === url) + 1;
         const percentile = userRank > 0 ? Math.round((1 - (userRank - 1) / allSites.length) * 100) : 0;
         

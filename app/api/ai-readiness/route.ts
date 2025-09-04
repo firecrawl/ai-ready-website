@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import FirecrawlApp from '@mendable/firecrawl-js';
 
-const firecrawl = new FirecrawlApp({
+const firecrawl = process.env.FIRECRAWL_API_KEY ? new FirecrawlApp({
   apiKey: process.env.FIRECRAWL_API_KEY!
-});
+}) : null;
 
 interface CheckResult {
   id: string;
@@ -140,8 +140,8 @@ async function analyzeHTML(html: string, metadata: unknown): Promise<CheckResult
   
   console.log('[AI-READY] HTML Check 4/5: Checking metadata quality...');
   // 4. Enhanced Metadata Quality (Medium Signal)
-  const hasOgTitle = metadata?.ogTitle || metadata?.title || html.includes('og:title') || html.includes('<title');
-  const hasOgDescription = metadata?.ogDescription || metadata?.description || html.includes('og:description') || html.includes('name="description"');
+  const hasOgTitle = (metadata as any)?.ogTitle || (metadata as any)?.title || html.includes('og:title') || html.includes('<title');
+  const hasOgDescription = (metadata as any)?.ogDescription || (metadata as any)?.description || html.includes('og:description') || html.includes('name="description"');
   
   // Check description quality
   const descMatch = html.match(/content="([^"]*)"/i);
@@ -619,6 +619,10 @@ export async function POST(request: NextRequest) {
     
     // Scrape the website using Firecrawl v2
     let scrapeResult;
+    if (!firecrawl) {
+      return NextResponse.json({ error: 'Firecrawl service not configured. Please set FIRECRAWL_API_KEY.' }, { status: 500 });
+    }
+    
     try {
       scrapeResult = await firecrawl.scrape(url, {
         formats: ['html'],

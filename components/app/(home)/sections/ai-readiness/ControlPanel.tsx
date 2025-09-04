@@ -139,7 +139,6 @@ export default function ControlPanel({
       if (analysisData.autoStartAI && analysisData.aiAnalysisPromise) {
         console.log('Auto-starting AI analysis with promise');
         setIsAnalyzingAI(true);
-        setShowAIAnalysis(true);
         
         // Add placeholder AI tiles immediately with actual titles
         const placeholderAIChecks = [
@@ -689,7 +688,6 @@ export default function ControlPanel({
             <button 
               onClick={async () => {
               setIsAnalyzingAI(true);
-              setShowAIAnalysis(true);
               
               // Add placeholder AI tiles immediately with actual titles
               const placeholderAIChecks = [

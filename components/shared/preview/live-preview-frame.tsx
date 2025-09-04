@@ -150,7 +150,6 @@ export default function LivePreviewFrame({
   }, [onScrapeComplete]);
 
   const connect = () => {
-    setIsConnecting(true);
     // Clear any existing connection
     if (wsRef.current) {
       wsRef.current.close();
@@ -166,7 +165,6 @@ export default function LivePreviewFrame({
 
       ws.addEventListener("open", () => {
         console.log("Connected - Streaming frames...");
-        setIsConnecting(false);
         // Clear any pending reconnection attempts
         if (reconnectTimeoutRef.current) {
           clearTimeout(reconnectTimeoutRef.current);

@@ -247,7 +247,6 @@ export default function StyleGuidePage() {
                     onReset={() => {
                       setIsAnalyzing(false);
                       setShowResults(false);
-                      setAnalysisStep(0);
                       setAnalysisData(null);
                       setUrl("");
                     }}

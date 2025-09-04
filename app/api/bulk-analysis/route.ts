@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import FirecrawlApp from '@mendable/firecrawl-js';
 import { db } from '@/lib/database';
 
-const firecrawl = new FirecrawlApp({
+const firecrawl = process.env.FIRECRAWL_API_KEY ? new FirecrawlApp({
   apiKey: process.env.FIRECRAWL_API_KEY!
-});
+}) : null;
 
 interface BulkAnalysisRequest {
   url: string;
@@ -117,10 +117,14 @@ export async function POST(request: NextRequest) {
         crawlOptions.allowedDomains = [baseUrl.hostname];
       }
 
+      if (!firecrawl) {
+        return NextResponse.json({ error: 'Firecrawl service not configured. Please set FIRECRAWL_API_KEY.' }, { status: 500 });
+      }
+
       // Start crawl
       const crawlResponse = await firecrawl.crawl(baseUrl.origin, crawlOptions);
       
-      console.log(`[BULK-ANALYSIS] Crawl initiated with ID: ${crawlResponse.id || 'N/A'}`);
+      console.log(`[BULK-ANALYSIS] Crawl initiated with ID: ${(crawlResponse as any).id || 'N/A'}`);
       
       // For this demo, we'll use the crawl response directly if it contains data
       // In production, you'd typically poll for the crawl status
@@ -269,7 +273,7 @@ export async function GET(request: NextRequest) {
   try {
     // Get recent analyses for this site
     const recentAnalyses = await db.getAnalysisHistory(siteUrl, 50);
-    const bulkAnalyses = recentAnalyses.filter(a => a.metadata?.isBulkAnalysis);
+    const bulkAnalyses = recentAnalyses.filter(a => (a.metadata as any)?.isBulkAnalysis);
 
     if (bulkAnalyses.length === 0) {
       return NextResponse.json({
@@ -293,7 +297,7 @@ export async function GET(request: NextRequest) {
         pages: sessionAnalyses.map(a => ({
           url: a.url,
           score: a.score,
-          title: a.metadata?.title || 'Untitled',
+          title: (a.metadata as any)?.title || 'Untitled',
           analyzedAt: a.analyzedAt
         }))
       }
