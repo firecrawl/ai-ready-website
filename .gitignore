@@ -42,7 +42,12 @@ certificates
 
 
 .env
-.env.*
+.env.local
+.env.development.local  
+.env.test.local
+.env.production.local
+# Allow .env.*.example files to be committed
+!.env.*.example
 post_migrator.py
 
 # Server
