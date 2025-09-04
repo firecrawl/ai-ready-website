@@ -1,4 +1,3 @@
-/* eslint-disable @stylistic/array-element-newline */
 "use client";
 
 import initCanvas from "@/utils/init-canvas";
@@ -6,7 +5,6 @@ import { animate } from "motion";
 import { useEffect, useRef } from "react";
 
 export default function EndpointsSearch({
-  alwaysHeat,
   size = 20,
 }: {
   alwaysHeat?: boolean;

@@ -1,4 +1,3 @@
-//@ts-nocheck
 "use client";
 
 import * as React from "react";
@@ -315,7 +314,7 @@ export const MenuContent = React.forwardRef<HTMLDivElement, MenuContentProps>(
                   "0px 12px 24px rgba(0, 0, 0, 0.08), 0px 4px 8px rgba(0, 0, 0, 0.04)",
                 width: matchTriggerWidth && menuWidth ? menuWidth : undefined,
                 transform: (() => {
-                  let transforms = [];
+                  const transforms = [];
 
                   // Handle vertical transforms for top/bottom sides
                   if (side === "top") {

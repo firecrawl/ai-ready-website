@@ -6,10 +6,8 @@ import {
   FileText, 
   Code, 
   Shield, 
-  Search, 
   Zap, 
   Database,
-  Lock,
   CheckCircle2,
   XCircle,
   Loader2,
@@ -55,7 +53,6 @@ export default function ControlPanel({
   analysisData,
   onReset,
 }: ControlPanelProps) {
-  const [showAIAnalysis, setShowAIAnalysis] = useState(false);
   const [aiInsights, setAiInsights] = useState<CheckItem[]>([]);
   const [isAnalyzingAI, setIsAnalyzingAI] = useState(false);
   const [combinedChecks, setCombinedChecks] = useState<CheckItem[]>([]);
@@ -340,12 +337,6 @@ export default function ControlPanel({
       default:
         return <div className="w-16 h-16 rounded-full border border-black-alpha-8" />;
     }
-  };
-
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-accent-black";
-    if (score >= 60) return "text-accent-black";
-    return "text-accent-black";
   };
 
 

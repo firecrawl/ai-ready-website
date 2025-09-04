@@ -27,7 +27,7 @@ export default function MetricBars({ metrics }: MetricBarsProps) {
     return 'bg-heat-20';
   };
   
-  const getBulletColor = (score: number) => {
+  const getBulletColor = () => {
     // Always use heat-100 for all bullets for consistency
     return 'bg-heat-100';
   };
@@ -66,7 +66,7 @@ export default function MetricBars({ metrics }: MetricBarsProps) {
             >
               {/* Bullet and Label - fixed width */}
               <div className="col-span-4 flex items-center gap-8">
-                <div className={`w-6 h-6 rounded-full ${getBulletColor(metric.score)}`} />
+                <div className={`w-6 h-6 rounded-full ${getBulletColor()}`} />
                 <span className="text-label-medium text-accent-black truncate">{metric.label}</span>
                 <motion.div
                   animate={{ rotate: isExpanded ? 180 : 0 }}

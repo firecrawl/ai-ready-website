@@ -19,7 +19,6 @@ export default function LivePreviewFrame({
   const idleStartTimerRef = useRef<NodeJS.Timeout>();
   const idleMoveTimerRef = useRef<NodeJS.Timeout>();
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(true);
   const [cursorPosition, setCursorPosition] = useState<{
     x: number;
     y: number;
@@ -206,7 +205,6 @@ export default function LivePreviewFrame({
             // --- End Interrupt Idle State ---
 
             if (imgRef.current && containerRef.current) {
-              const rect = containerRef.current.getBoundingClientRect();
               const imageRect = imgRef.current.getBoundingClientRect();
 
               // Calculate the scale factor between the original coordinates and our container
@@ -237,13 +235,13 @@ export default function LivePreviewFrame({
             localStorage.setItem("browserImageData", img);
             imgRef.current.src = img;
           }
-        } catch (e) {
+        } catch {
           // Try to use raw data as fallback if JSON parsing fails
           if (typeof event.data === "string" && imgRef.current) {
             try {
               imgRef.current.src = event.data;
-            } catch (imgError) {
-              console.error("Failed to set image source directly:", imgError);
+            } catch {
+              console.error("Failed to set image source directly");
             }
           }
         }
@@ -263,12 +261,11 @@ export default function LivePreviewFrame({
         }
       });
 
-      ws.addEventListener("error", (error) => {
+      ws.addEventListener("error", () => {
         console.error("Connection error - Will attempt to reconnect");
       });
-    } catch (error) {
+    } catch {
       console.error("Failed to create connection");
-      setIsConnecting(false);
     }
   };
 

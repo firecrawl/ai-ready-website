@@ -8,25 +8,13 @@ import {
   Download,
   FileText,
   Code,
-  Shield,
-  Search,
-  Zap,
-  Database,
-  Lock,
   CheckCircle2,
   XCircle,
   Loader2,
   AlertCircle,
-  Bot,
-  Sparkles,
-  FileCode,
-  Network,
-  Info,
-  Eye,
-  Clock,
   Trophy
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import HistoricalTrends from "./HistoricalTrends";
 import ImplementationGuide from "./ImplementationGuide";
 
@@ -48,7 +36,6 @@ interface CheckItem {
 }
 
 export default function EnhancedControlPanel({
-  isAnalyzing,
   showResults,
   url,
   analysisData,
@@ -271,7 +258,7 @@ export default function EnhancedControlPanel({
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 max-w-2xl mx-auto">
                   <div className="text-blue-800 font-medium mb-2">Coming Soon!</div>
                   <p className="text-blue-700 text-sm">
-                    We're building comprehensive industry benchmarks and competitive analysis features. 
+                    We&apos;re building comprehensive industry benchmarks and competitive analysis features. 
                     Your site will be automatically compared against similar websites in your industry.
                   </p>
                 </div>

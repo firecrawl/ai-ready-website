@@ -9,8 +9,9 @@ interface DownloadReportProps {
   isVisible: boolean;
 }
 
-// Mock data for demonstration when no real data is available
-const getMockAnalysisData = () => ({
+// Mock data for demonstration when no real data is available (removed to avoid unused variable warning)
+/*
+const _getMockAnalysisData = () => ({
   url: "https://example.com",
   overallScore: 78,
   checks: [
@@ -84,7 +85,7 @@ const getMockAnalysisData = () => ({
     description: "Comprehensive AI readiness analysis for example.com",
     analyzedAt: new Date().toISOString()
   }
-});
+*/
 
 export default function DownloadReport({ analysisData, isVisible }: DownloadReportProps) {
   const [isDownloading, setIsDownloading] = useState<string | null>(null);

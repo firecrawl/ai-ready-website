@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, X, Zap, FileText, Shield, Globe, Code, Sparkles, AlertCircle } from "lucide-react";
+import { Check, X, FileText, Globe, Code, Sparkles, AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface InlineResultsProps {
@@ -35,7 +35,6 @@ export default function InlineResults({
   isAnalyzing,
   showResults,
   analysisStep,
-  url,
   onReset,
 }: InlineResultsProps) {
   const [displayScore, setDisplayScore] = useState(0);

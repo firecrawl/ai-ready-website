@@ -5,8 +5,8 @@ interface AnalysisResult {
   id: string;
   url: string;
   score: number;
-  checks: any[];
-  metadata: any;
+  checks: unknown[];
+  metadata: unknown;
   analyzedAt: string;
   userId?: string; // For future multi-user support
 }
@@ -80,7 +80,7 @@ class MemoryDatabase {
   }
 
   async getTopPerformingSites(industry?: string, limit: number = 10): Promise<{ url: string; score: number; analyzedAt: string }[]> {
-    let analyses = [...this.analyses];
+    const analyses = [...this.analyses];
     
     // If industry filter is provided, we'd need to implement industry detection
     // For now, return top sites overall
