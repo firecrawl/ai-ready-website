@@ -12,8 +12,8 @@ import "styles/main.css";
 // });
 
 export const metadata: Metadata = {
-  title: "Is Your Website AI Ready?",
-  description: "UI components and design system for Firecrawl",
+  title: "AI-Ready Website & SEO Analyzer",
+  description: "Comprehensive website analysis with AI readiness scoring and advanced SEO insights",
   icons: {
     icon: "/favicon.png",
   },
