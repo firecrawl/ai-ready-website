@@ -1,8 +1,35 @@
+console.log("DEBUG — Firecrawl present?", !!process.env.FIRECRAWL_API_KEY,
+            "prefix:", process.env.FIRECRAWL_API_KEY?.slice(0,5));
+console.log("DEBUG — OpenAI present?", !!process.env.OPENAI_API_KEY,
+            "prefix:", process.env.OPENAI_API_KEY?.slice(0,5));
+
+// optional debug logs
+console.log("DEBUG — Firecrawl present?", !!process.env.FIRECRAWL_API_KEY, "prefix:", process.env.FIRECRAWL_API_KEY?.slice(0,5));
+console.log("DEBUG — OpenAI present?", !!process.env.OPENAI_API_KEY, "prefix:", process.env.OPENAI_API_KEY?.slice(0,5));
+
 import { NextRequest, NextResponse } from 'next/server';
 import FirecrawlApp from '@mendable/firecrawl-js';
 
+// Pin runtime to Node to avoid Edge env quirks locally
+export const runtime = 'nodejs';
+
+// Debug: confirm envs are loaded (remove after verifying)
+console.log(
+  "DEBUG — Firecrawl present?",
+  !!process.env.FIRECRAWL_API_KEY,
+  "prefix:",
+  process.env.FIRECRAWL_API_KEY?.slice(0, 5)
+);
+console.log(
+  "DEBUG — OpenAI present?",
+  !!process.env.OPENAI_API_KEY,
+  "prefix:",
+  process.env.OPENAI_API_KEY?.slice(0, 5)
+);
+
+// Single Firecrawl client instance with explicit apiKey
 const firecrawl = new FirecrawlApp({
-  apiKey: process.env.FIRECRAWL_API_KEY!
+  apiKey: process.env.FIRECRAWL_API_KEY!,
 });
 
 interface CheckResult {
@@ -454,6 +481,7 @@ function getDomainReputationBonus(domain: string): number {
   
   return 0;
 }
+
 
 export async function POST(request: NextRequest) {
   try {
