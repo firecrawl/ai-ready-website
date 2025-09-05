@@ -15,6 +15,7 @@ npm install
 ```bash
 # Copy from .env.local.example or add your API keys
 OPENAI_API_KEY=your_openai_api_key
+GROQ_API_KEY=your_groq_api_key
 FIRECRAWL_API_KEY=your_firecrawl_api_key
 ```
 
@@ -31,3 +32,13 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 - Real-time scoring and recommendations
 - Visual charts and metrics
 - SEO and accessibility checks
+
+## AI Models
+
+This application uses multiple AI providers for analysis:
+
+- **Groq API**: Primary AI provider using the `moonshotai/kimi-k2-instruct` model for website analysis
+- **OpenAI API**: Fallback option when Groq is unavailable
+- **Kimi2 Model**: Advanced language model accessed through Groq API for AI readiness insights
+
+The system automatically prioritizes Groq API due to OpenAI quota limitations and falls back to mock data if both services are unavailable.
