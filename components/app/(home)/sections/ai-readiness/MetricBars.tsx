@@ -20,7 +20,7 @@ export default function MetricBars({ metrics }: MetricBarsProps) {
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   
   const getBarColor = (score: number) => {
-    // Use brand orange colors with opacity for gradient effect
+    // Use brand red colors with opacity for gradient effect
     if (score >= 80) return 'bg-heat-100';
     if (score >= 60) return 'bg-heat-90';
     if (score >= 40) return 'bg-heat-40 opacity-80';

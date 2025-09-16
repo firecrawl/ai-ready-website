@@ -49,7 +49,7 @@ export function CapsuleButton({
       "hover:bg-heat-200",
       "active:scale-[0.98]",
       "shadow-[0_1px_2px_rgba(0,0,0,0.05)]",
-      "hover:shadow-[0_4px_12px_rgba(250,93,25,0.25)]",
+      "hover:shadow-[0_4px_12px_rgba(223,71,92,0.25)]",
     ],
     secondary: [
       "bg-black text-white",

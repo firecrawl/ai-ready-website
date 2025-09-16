@@ -26,10 +26,10 @@ export default function ScoreChart({ score, enhanced = false, size = 200 }: Scor
   
   // Determine color based on score
   const getColor = () => {
-    if (score >= 80) return "#FF4A00"; // heat-200 - Excellent
-    if (score >= 60) return "#FF6500"; // heat-150 - Good
-    if (score >= 40) return "#FF8533"; // heat-100 - Warning
-    return "#FFA566"; // heat-50 - Poor
+    if (score >= 80) return "#e85470"; // heat-200 - Excellent
+    if (score >= 60) return "#e0587a"; // heat-150 - Good
+    if (score >= 40) return "#df475c"; // heat-100 - Warning
+    return "#e8778f"; // heat-50 - Poor
   };
   
   const getGradientId = enhanced ? "enhanced-gradient" : "normal-gradient";
@@ -40,7 +40,7 @@ export default function ScoreChart({ score, enhanced = false, size = 200 }: Scor
         <defs>
           <linearGradient id={getGradientId} x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor={getColor()} stopOpacity="1" />
-            <stop offset="100%" stopColor={enhanced ? "#FF8533" : getColor()} stopOpacity="0.6" />
+            <stop offset="100%" stopColor={enhanced ? "#df475c" : getColor()} stopOpacity="0.6" />
           </linearGradient>
           <filter id="glow">
             <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
