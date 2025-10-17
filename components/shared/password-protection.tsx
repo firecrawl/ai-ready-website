@@ -15,7 +15,7 @@ export default function PasswordProtection({ children }: PasswordProtectionProps
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === "Romsey$01") {
+    if (password === "letmein") {
       setIsAuthenticated(true);
       setError("");
     } else {
