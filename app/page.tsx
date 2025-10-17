@@ -1,15 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Import shared components
-import Button from "@/components/shared/button/Button";
 import { Connector } from "@/components/shared/layout/curvy-rect";
 import HeroFlame from "@/components/shared/effects/flame/hero-flame";
 import AsciiExplosion from "@/components/shared/effects/flame/ascii-explosion";
 import { HeaderProvider } from "@/components/shared/header/HeaderContext";
+import PasswordProtection from "@/components/shared/password-protection";
 
 // Import hero section components
 import HomeHeroBackground from "@/components/app/(home)/sections/hero/Background/Background";
@@ -21,15 +20,12 @@ import HeroInputSubmitButton from "@/components/app/(home)/sections/hero-input/B
 import Globe from "@/components/app/(home)/sections/hero-input/_svg/Globe";
 import HeroScraping from "@/components/app/(home)/sections/hero-scraping/HeroScraping";
 import { Endpoint } from "@/components/shared/Playground/Context/types";
-import InlineResults from "@/components/app/(home)/sections/ai-readiness/InlineResults";
 import ControlPanel from "@/components/app/(home)/sections/ai-readiness/ControlPanel";
 
 // Import header components
 import HeaderBrandKit from "@/components/shared/header/BrandKit/BrandKit";
 import HeaderWrapper from "@/components/shared/header/Wrapper/Wrapper";
 import HeaderDropdownWrapper from "@/components/shared/header/Dropdown/Wrapper/Wrapper";
-import GithubIcon from "@/components/shared/header/Github/_svg/GithubIcon";
-import ButtonUI from "@/components/ui/shadcn/button";
 
 export default function StyleGuidePage() {
   const [tab, setTab] = useState<Endpoint>(Endpoint.Scrape);
@@ -117,8 +113,9 @@ export default function StyleGuidePage() {
   };
 
   return (
-    <HeaderProvider>
-      <div className="min-h-screen bg-background-base">
+    <PasswordProtection>
+      <HeaderProvider>
+        <div className="min-h-screen bg-background-base">
         {/* Header/Navigation Section */}
         <HeaderDropdownWrapper />
         
@@ -139,17 +136,7 @@ export default function StyleGuidePage() {
               </div>
               
               <div className="flex gap-8">
-                {/* GitHub Template Button */}
-                <a
-                  className="contents"
-                  href="https://github.com/firecrawl/ai-ready-website"
-                  target="_blank"
-                >
-                  <ButtonUI variant="tertiary">
-                    <GithubIcon />
-                    Use this Template
-                  </ButtonUI>
-                </a>
+                {/* Removed GitHub link */}
               </div>
             </div>
           </HeaderWrapper>
@@ -180,13 +167,6 @@ export default function StyleGuidePage() {
                     <br className="lg-max:hidden" />
                     page snapshot. High-signal metrics for LLM compatibility.
                   </p>
-                  <Link
-                    className="bg-black-alpha-4 hover:bg-black-alpha-6 rounded-6 px-8 lg:px-6 text-label-large h-30 lg:h-24 block mt-8 mx-auto w-max gap-4 transition-all"
-                    href="#"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    Powered by Firecrawl.
-                  </Link>
                 </motion.div>
               ) : (
                 <motion.div
@@ -296,7 +276,8 @@ export default function StyleGuidePage() {
             </motion.div>
           )}
         </section>
-      </div>
-    </HeaderProvider>
+        </div>
+      </HeaderProvider>
+    </PasswordProtection>
   );
 }
