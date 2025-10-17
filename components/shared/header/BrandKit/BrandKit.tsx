@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import FirecrawlIcon from "@/components/shared/firecrawl-icon/firecrawl-icon";
-import Logo from "@/components/shared/header/_svg/Logo";
+import LiveLogo from "@/components/shared/header/_svg/LiveLogo";
 import { useHeaderContext } from "@/components/shared/header/HeaderContext";
 import { cn } from "@/utils/cn";
 
@@ -46,7 +46,7 @@ export default function HeaderBrandKit() {
         }}
       >
         <FirecrawlIcon className="size-28 -top-2 relative" />
-        <Logo />
+        <LiveLogo />
       </Link>
 
       <AnimatePresence initial={false} mode="popLayout">
