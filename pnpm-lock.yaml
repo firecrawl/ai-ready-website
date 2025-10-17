@@ -9,8 +9,11 @@ importers:
   .:
     dependencies:
       '@mendable/firecrawl-js':
-        specifier: ^3.0.3
-        version: 3.3.0
+        specifier: ^4.4.1
+        version: 4.4.1
+      '@radix-ui/react-accordion':
+        specifier: ^1.2.12
+        version: 1.2.12(@types/react-dom@18.3.7(@types/react@18.3.24))(@types/react@18.3.24)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@radix-ui/react-collapsible':
         specifier: ^1.1.0
         version: 1.1.12(@types/react-dom@18.3.7(@types/react@18.3.24))(@types/react@18.3.24)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -62,6 +65,9 @@ importers:
       geist:
         specifier: ^1.4.2
         version: 1.4.2(next@14.2.25(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
+      jotai:
+        specifier: ^2.13.1
+        version: 2.15.0(@types/react@18.3.24)(react@18.2.0)
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
@@ -71,6 +77,9 @@ importers:
       motion:
         specifier: ^12.20.2
         version: 12.23.12(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      nanoid:
+        specifier: ^5.1.5
+        version: 5.1.6
       next:
         specifier: 14.2.25
         version: 14.2.25(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -239,8 +248,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.30':
     resolution: {integrity: sha512-GQ7Nw5G2lTu/BtHTKfXhKHok2WGetd4XYcVKGx00SjAk8GMwgJM3zr6zORiPGuOE+/vkc90KtTosSSvaCjKb2Q==}
 
-  '@mendable/firecrawl-js@3.3.0':
-    resolution: {integrity: sha512-ZpU3SllpZEvPHj8YjnGI/SnXoSRXdC3QfJkUcRlTtDPZRlc+kbq+a6HbZ2SzzjysyF3qhgGdYgx0TMnA2phS0g==}
+  '@mendable/firecrawl-js@4.4.1':
+    resolution: {integrity: sha512-ba6Ed/Nbs6/dCffyiTJQQks6DJLPdClqKBl5aWxhhqzjNqhiTmSCgp/JulITwEf9vxxGHFRa+IuC6nurYGG2rg==}
     engines: {node: '>=22.0.0'}
 
   '@napi-rs/wasm-runtime@0.2.12':
@@ -331,6 +340,19 @@ packages:
 
   '@radix-ui/primitive@1.1.3':
     resolution: {integrity: sha512-JTF99U/6XIjCBo0wqkU5sK10glYe27MRRsfwoiq5zzOEZLHU3A3KCMa5X/azekYRCJ0HlwI0crAXS/5dEHTzDg==}
+
+  '@radix-ui/react-accordion@1.2.12':
+    resolution: {integrity: sha512-T4nygeh9YE9dLRPhAHSeOZi7HBXo+0kYIPJXayZfvWOWA0+n3dESrZbjfDPUABkUNym6Hd+f2IR113To8D2GPA==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
 
   '@radix-ui/react-arrow@1.1.7':
     resolution: {integrity: sha512-F+M1tLhO+mlQaOWspE8Wstg+z6PwxwRd8oQ8IXceWz92kfAmalTRf0EjrouQeo7QssEPfCn05B4Ihs1K9WQ/7w==}
@@ -1003,8 +1025,8 @@ packages:
     resolution: {integrity: sha512-Xm7bpRXnDSX2YE2YFfBk2FnF0ep6tmG7xPh8iHee8MIcrgq762Nkce856dYtJYLkuIoYZvGfTs/PbZhideTcEg==}
     engines: {node: '>=4'}
 
-  axios@1.11.0:
-    resolution: {integrity: sha512-1Lx3WLFQWm3ooKDYZD1eXmoGO9fxYQjrycfHFC8P0sCfQVXyROp0p9PFWBehewBOdCwHc+f/b8I0fMto5eSfwA==}
+  axios@1.12.2:
+    resolution: {integrity: sha512-vMJzPewAlRyOgxV2dU0Cuz2O8zzzx9VYtbJOaBgXFeLc4IV/Eg50n4LowmehOOR61S8ZMpc2K5Sa7g6A4jfkUw==}
 
   axobject-query@4.1.0:
     resolution: {integrity: sha512-qIj0G9wZbMGNLjLmg1PT6v2mE9AH2zlnADJD/2tC6E00hgmhUOfEB6greHPAfLRSufHqROIUTkw6E+M3lH0PTQ==}
@@ -1774,6 +1796,24 @@ packages:
     resolution: {integrity: sha512-/imKNG4EbWNrVjoNC/1H5/9GFy+tqjGBHCaSsN+P2RnPqjsLmv6UD3Ej+Kj8nBWaRAwyk7kK5ZUc+OEatnTR3A==}
     hasBin: true
 
+  jotai@2.15.0:
+    resolution: {integrity: sha512-nbp/6jN2Ftxgw0VwoVnOg0m5qYM1rVcfvij+MZx99Z5IK13eGve9FJoCwGv+17JvVthTjhSmNtT5e1coJnr6aw==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@babel/core': '>=7.0.0'
+      '@babel/template': '>=7.0.0'
+      '@types/react': '>=17.0.0'
+      react: '>=17.0.0'
+    peerDependenciesMeta:
+      '@babel/core':
+        optional: true
+      '@babel/template':
+        optional: true
+      '@types/react':
+        optional: true
+      react:
+        optional: true
+
   js-binary-schema-parser@2.0.3:
     resolution: {integrity: sha512-xezGJmOb4lk/M1ZZLTR/jaBHQ4gG/lqQnJqdIv4721DMggsa1bDVlHXNeHYogaIEHD9vCRv0fcL4hMA+Coarkg==}
 
@@ -1925,6 +1965,11 @@ packages:
   nanoid@3.3.11:
     resolution: {integrity: sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
+
+  nanoid@5.1.6:
+    resolution: {integrity: sha512-c7+7RQ+dMB5dPwwCp4ee1/iV/q2P6aK1mTZcfr1BTuVlyW9hJYiMPybJCcnBlQtuSmTIWNeazm/zqNoZSSElBg==}
+    engines: {node: ^18 || >=20}
     hasBin: true
 
   napi-postinstall@0.3.3:
@@ -2763,9 +2808,9 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@mendable/firecrawl-js@3.3.0':
+  '@mendable/firecrawl-js@4.4.1':
     dependencies:
-      axios: 1.11.0
+      axios: 1.12.2
       typescript-event-target: 1.1.1
       zod: 3.25.76
       zod-to-json-schema: 3.24.6(zod@3.25.76)
@@ -2832,6 +2877,23 @@ snapshots:
     optional: true
 
   '@radix-ui/primitive@1.1.3': {}
+
+  '@radix-ui/react-accordion@1.2.12(@types/react-dom@18.3.7(@types/react@18.3.24))(@types/react@18.3.24)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+    dependencies:
+      '@radix-ui/primitive': 1.1.3
+      '@radix-ui/react-collapsible': 1.1.12(@types/react-dom@18.3.7(@types/react@18.3.24))(@types/react@18.3.24)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@radix-ui/react-collection': 1.1.7(@types/react-dom@18.3.7(@types/react@18.3.24))(@types/react@18.3.24)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@radix-ui/react-compose-refs': 1.1.2(@types/react@18.3.24)(react@18.2.0)
+      '@radix-ui/react-context': 1.1.2(@types/react@18.3.24)(react@18.2.0)
+      '@radix-ui/react-direction': 1.1.1(@types/react@18.3.24)(react@18.2.0)
+      '@radix-ui/react-id': 1.1.1(@types/react@18.3.24)(react@18.2.0)
+      '@radix-ui/react-primitive': 2.1.3(@types/react-dom@18.3.7(@types/react@18.3.24))(@types/react@18.3.24)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@radix-ui/react-use-controllable-state': 1.2.2(@types/react@18.3.24)(react@18.2.0)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    optionalDependencies:
+      '@types/react': 18.3.24
+      '@types/react-dom': 18.3.7(@types/react@18.3.24)
 
   '@radix-ui/react-arrow@1.1.7(@types/react-dom@18.3.7(@types/react@18.3.24))(@types/react@18.3.24)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
@@ -3513,7 +3575,7 @@ snapshots:
 
   axe-core@4.10.3: {}
 
-  axios@1.11.0:
+  axios@1.12.2:
     dependencies:
       follow-redirects: 1.15.11
       form-data: 4.0.4
@@ -4433,6 +4495,11 @@ snapshots:
 
   jiti@1.21.7: {}
 
+  jotai@2.15.0(@types/react@18.3.24)(react@18.2.0):
+    optionalDependencies:
+      '@types/react': 18.3.24
+      react: 18.2.0
+
   js-binary-schema-parser@2.0.3: {}
 
   js-tokens@4.0.0: {}
@@ -4562,6 +4629,8 @@ snapshots:
       thenify-all: 1.6.0
 
   nanoid@3.3.11: {}
+
+  nanoid@5.1.6: {}
 
   napi-postinstall@0.3.3: {}
 

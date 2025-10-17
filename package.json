@@ -2,6 +2,7 @@
   "name": "firecrawl-style-guide",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "pnpm@10.0.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,7 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@mendable/firecrawl-js": "^4.3.1",
+    "@mendable/firecrawl-js": "^4.4.1",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-collapsible": "^1.1.0",
     "@radix-ui/react-dialog": "^1.0.5",
