@@ -453,8 +453,15 @@ function getDomainReputationBonus(domain: string): number {
 
 export async function POST(request: NextRequest) {
   try {
+    const apiKey = process.env.FIRECRAWL_API_KEY;
+    console.log('[AI-READY] API Key check:', apiKey ? 'Present' : 'Missing', 'Length:', apiKey?.length);
+    
+    if (!apiKey) {
+      return NextResponse.json({ error: 'Firecrawl API key not configured' }, { status: 500 });
+    }
+    
     const firecrawl = new FirecrawlApp({
-      apiKey: process.env.FIRECRAWL_API_KEY!
+      apiKey: apiKey.trim()
     });
     
     let { url } = await request.json();
@@ -481,13 +488,22 @@ export async function POST(request: NextRequest) {
     // Scrape the website using Firecrawl v2
     let scrapeResult;
     try {
+      console.log('[AI-READY] Attempting to scrape URL:', url);
       scrapeResult = await firecrawl.scrape(url, {
         formats: ['html'],
       });
       console.log(`[AI-READY] Step 1/4: Firecrawl scrape completed in ${Date.now() - scrapeStartTime}ms`);
-    } catch (scrapeError) {
+    } catch (scrapeError: any) {
       console.error('Firecrawl scrape error:', scrapeError);
-      return NextResponse.json({ error: 'Failed to scrape website. Please check the URL.' }, { status: 500 });
+      console.error('Error details:', {
+        message: scrapeError?.message,
+        code: scrapeError?.code,
+        stack: scrapeError?.stack
+      });
+      return NextResponse.json({ 
+        error: 'Failed to scrape website. Please check the URL and try again.',
+        details: scrapeError?.message || 'Unknown error'
+      }, { status: 500 });
     }
     
     // Check different possible response structures
