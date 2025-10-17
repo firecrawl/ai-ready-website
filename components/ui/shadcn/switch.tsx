@@ -4,7 +4,7 @@ import * as React from "react";
 import * as SwitchPrimitives from "@radix-ui/react-switch";
 import { cva, type VariantProps } from "class-variance-authority";
 
-import { cx } from "@/lib/app/utils";
+import { cn } from "@/utils/cn";
 
 const switchVariants = cva(
   "peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-muted-foreground data-[state=unchecked]:bg-input",
@@ -46,11 +46,11 @@ const Switch = React.forwardRef<
   SwitchProps
 >(({ className, size, ...props }, ref) => (
   <SwitchPrimitives.Root
-    className={cx(switchVariants({ size, className }))}
+    className={cn(switchVariants({ size, className }))}
     {...props}
     ref={ref}
   >
-    <SwitchPrimitives.Thumb className={cx(thumbVariants({ size }))} />
+    <SwitchPrimitives.Thumb className={cn(thumbVariants({ size }))} />
   </SwitchPrimitives.Root>
 ));
 Switch.displayName = SwitchPrimitives.Root.displayName;

@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import FirecrawlApp from '@mendable/firecrawl-js';
 
-const firecrawl = new FirecrawlApp({
-  apiKey: process.env.FIRECRAWL_API_KEY!
-});
-
 interface CheckResult {
   id: string;
   label: string;
@@ -457,6 +453,10 @@ function getDomainReputationBonus(domain: string): number {
 
 export async function POST(request: NextRequest) {
   try {
+    const firecrawl = new FirecrawlApp({
+      apiKey: process.env.FIRECRAWL_API_KEY!
+    });
+    
     let { url } = await request.json();
     
     if (!url) {
